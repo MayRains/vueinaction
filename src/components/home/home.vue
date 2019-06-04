@@ -14,14 +14,64 @@
         </el-col>
         <el-col :span="2">
           <div class="grid-content bg-purple">
-            <a href="#">注销</a>
+            <a href="#"
+               class="logout">注销</a>
           </div>
         </el-col>
       </el-row>
     </el-header>
     <el-container>
       <el-aside width="200px"
-                class="aside">Aside</el-aside>
+                class="aside">
+        <el-menu default-active="2"
+                 class="el-menu-vertical-demo"
+                 @open="handleOpen"
+                 @close="handleClose"
+                 background-color="#545c64"
+                 text-color="#fff"
+                 active-text-color="#ffd04b"
+                 unique-opened="true">
+          <el-submenu index="1">
+            <template slot="title">
+              <i class="el-icon-location"></i>
+              <span>用户管理</span>
+            </template>
+            <!-- <template slot="title">分组一</template> -->
+            <el-menu-item index="1-1"><i class="el-icon-user-solid"></i>用户列表</el-menu-item>
+          </el-submenu>
+          <el-submenu index="2">
+            <template slot="title">
+              <i class="el-icon-star-on"></i>
+              <span slot="title">权限管理</span>
+            </template>
+            <el-menu-item index="2-1"><i class="el-icon-s-custom"></i>角色列表</el-menu-item>
+            <el-menu-item index="2-2"><i class="el-icon-s-check"></i>权限列表</el-menu-item>
+          </el-submenu>
+          <el-submenu index="3">
+            <template slot="title">
+              <i class="el-icon-s-goods"></i>
+              <span slot="title">商品管理</span>
+            </template>
+            <el-menu-item index="3-1"><i class="el-icon-s-shop"></i>商品列表</el-menu-item>
+            <el-menu-item index="3-2"><i class="el-icon-question"></i>分类参数</el-menu-item>
+            <el-menu-item index="3-3"><i class="el-icon-goods"></i>商品分类</el-menu-item>
+          </el-submenu>
+          <el-submenu index="4">
+            <template slot="title">
+              <i class="el-icon-s-order"></i>
+              <span slot="title">订单管理</span>
+            </template>
+            <el-menu-item index="4-1"><i class="el-icon-s-promotion"></i>订单列表</el-menu-item>
+          </el-submenu>
+          <el-submenu index="5">
+            <template slot="title">
+              <i class="el-icon-info"></i>
+              <span slot="title">数据统计</span>
+            </template>
+            <el-menu-item index="5-1"><i class="el-icon-s-data"></i>数据报表</el-menu-item>
+          </el-submenu>
+        </el-menu>
+      </el-aside>
       <el-main class="main">Main</el-main>
     </el-container>
   </el-container>
@@ -52,15 +102,15 @@ export default {}
 }
 .brand img {
   display: inline-block;
-  max-width: 30%;
+  max-width: 31%;
   border-radius: 3px;
 }
 h3 {
   text-align: center;
 }
-a {
+.logout {
   line-height: 60px;
   text-decoration: none;
-  color: drakgreen;
+  color: darkgreen;
 }
 </style>
