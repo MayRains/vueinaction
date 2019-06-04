@@ -1,10 +1,110 @@
 <template>
-  <div>user 测试</div>
+  <el-card class="box-card">
+    <!-- 1.面包屑 -->
+    <el-breadcrumb separator="/">
+      <el-breadcrumb-item>首页</el-breadcrumb-item>
+      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
+    </el-breadcrumb>
+    <!-- 2.搜索 -->
+    <el-row>
+      <el-col>
+        <el-input placeholder="请输入内容"
+                  class="seekinput"
+                  v-model="query">
+          <el-button slot="append"
+                     icon="el-icon-search"></el-button>
+        </el-input>
+        <el-button type="success">添加用户</el-button>
+      </el-col>
+    </el-row>
+    <!-- 3.表格 -->
+    <el-table :data="tableData"
+              style="width: 100%">
+      <el-table-column label="#"
+                       width="50"
+                       type="index">
+      </el-table-column>
+      <el-table-column prop="name"
+                       label="姓名"
+                       width="70">
+      </el-table-column>
+      <el-table-column prop="address"
+                       label="邮箱">
+      </el-table-column>
+      <el-table-column prop="address"
+                       label="电话">
+      </el-table-column>
+      <el-table-column prop="address"
+                       label="创建日期">
+      </el-table-column>
+      <el-table-column prop="address"
+                       label="用户状态">
+      </el-table-column>
+      <el-table-column prop="address"
+                       label="操作">
+      </el-table-column>
+    </el-table>
+    <!-- 4.分页 -->
+  </el-card>
 </template>
 
 <script>
-export default {}
+export default {
+  data () {
+    return {
+      query: '',
+      pagenum: 1,
+      pagesize: 5,
+      tableData: [
+        {
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        },
+        {
+          date: '2016-05-04',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1517 弄'
+        },
+        {
+          date: '2016-05-01',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1519 弄'
+        },
+        {
+          date: '2016-05-03',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1516 弄'
+        }
+      ]
+    }
+  },
+  created () {
+    this.getUserList()
+  },
+  methods: {
+    async getUserList () {
+      const AUTH_TOKEN = localStorage.getItem('token')
+      this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN
+      const res = await this.$http.get(
+        `users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${
+          this.pagesize
+        }`
+      )
+      console.log(res)
+    }
+  }
+}
 </script>
 
 <style>
+.box-card {
+  height: 100%;
+}
+.seekinput {
+  border: black 2px;
+  width: 30%;
+  padding-top: 20px;
+}
 </style>

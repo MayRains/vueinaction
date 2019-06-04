@@ -120,11 +120,12 @@ export default {
 }
 .brand img {
   display: inline-block;
-  max-width: 31%;
+  max-width: 25%;
   border-radius: 3px;
 }
 h3 {
   text-align: center;
+  line-height: 15px;
 }
 .logout {
   line-height: 60px;
