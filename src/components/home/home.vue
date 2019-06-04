@@ -15,7 +15,8 @@
         <el-col :span="2">
           <div class="grid-content bg-purple">
             <a href="#"
-               class="logout">注销</a>
+               class="logout"
+               @click.prevent="handleLogOut">注销</a>
           </div>
         </el-col>
       </el-row>
@@ -25,12 +26,10 @@
                 class="aside">
         <el-menu default-active="2"
                  class="el-menu-vertical-demo"
-                 @open="handleOpen"
-                 @close="handleClose"
                  background-color="#545c64"
                  text-color="#fff"
                  active-text-color="#ffd04b"
-                 unique-opened="true">
+                 :unique-opened="true">
           <el-submenu index="1">
             <template slot="title">
               <i class="el-icon-location"></i>
@@ -78,7 +77,23 @@
 </template>
 
 <script>
-export default {}
+export default {
+  // 获取 token | if token ->继续渲染组件 | 没有token -> 登录
+  beforeCreate () {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      this.$router.push({ name: 'login' })
+    }
+  },
+  methods: {
+    handleLogOut () {
+      // 清除token 提示 回到 login
+      localStorage.clear()
+      this.$message.success('注销成功')
+      this.$router.push({ name: 'login' })
+    }
+  }
+}
 </script>
 
 <style>
