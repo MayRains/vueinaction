@@ -110,6 +110,7 @@ export default {
   background-color: #d3dce6;
 }
 .main {
+  padding: 0;
   background-color: #e9eef3;
   height: 100%;
 }

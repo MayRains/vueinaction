@@ -19,33 +19,67 @@
       </el-col>
     </el-row>
     <!-- 3.表格 -->
-    <el-table :data="tableData"
-              style="width: 100%">
+    <el-table :data="userlist"
+              style="width: 100%"
+              class="usertable">
       <el-table-column label="#"
                        width="50"
                        type="index">
       </el-table-column>
-      <el-table-column prop="name"
+      <el-table-column prop="username"
                        label="姓名"
                        width="70">
       </el-table-column>
-      <el-table-column prop="address"
+      <el-table-column prop="email"
                        label="邮箱">
       </el-table-column>
-      <el-table-column prop="address"
+      <el-table-column prop="mobile"
                        label="电话">
       </el-table-column>
-      <el-table-column prop="address"
+      <el-table-column prop="create_time"
                        label="创建日期">
+        <!-- 如果单元格内部不是要显示字符串或文本 譬如一个过滤器处理的数据 需要用 template 包裹 -->
+        <!-- template 需要加一个 slot-scope 来配置数据源(生命周期) -->
+        <!-- userlist.row -- 数组中的每一个对象 -->
+        <template slot-scope="userlist">
+          {{userlist.row.create_time | formatDate}}
+        </template>
       </el-table-column>
-      <el-table-column prop="address"
+      <el-table-column prop="mg_state"
                        label="用户状态">
+        <template slot-scope="userlist">
+          <el-switch v-model="userlist.row.mg_state"
+                     active-color="#13ce66"
+                     inactive-color="#ff4949">
+          </el-switch>
+        </template>
       </el-table-column>
       <el-table-column prop="address"
                        label="操作">
+        <template>
+          <el-button type="success"
+                     icon="el-icon-check"
+                     circle></el-button>
+          <el-button type="primary"
+                     icon="el-icon-edit"
+                     circle></el-button>
+          <el-button type="danger"
+                     icon="el-icon-delete"
+                     circle></el-button>
+        </template>
       </el-table-column>
     </el-table>
     <!-- 4.分页 -->
+    <div class="block">
+      <el-pagination @size-change="handleSizeChange"
+                     @current-change="handleCurrentChange"
+                     :current-page="pagenum"
+                     :page-sizes="[2, 3, 4, 5]"
+                     :page-size="pagesize"
+                     layout="total, sizes, prev, pager, next, jumper"
+                     :total="total">
+      </el-pagination>
+    </div>
   </el-card>
 </template>
 
@@ -55,29 +89,9 @@ export default {
     return {
       query: '',
       pagenum: 1,
-      pagesize: 5,
-      tableData: [
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
-        },
-        {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄'
-        },
-        {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄'
-        }
-      ]
+      pagesize: 2,
+      total: -1,
+      userlist: []
     }
   },
   created () {
@@ -93,12 +107,40 @@ export default {
         }`
       )
       console.log(res)
+      const {
+        meta: { msg, status },
+        data: { users, total }
+      } = res.data
+      if (status === 200) {
+        this.userlist = users
+        this.total = total
+        this.$message.success(msg)
+      } else {
+        this.$message.error(msg)
+      }
+    },
+    // 分页相关的方法
+    handleSizeChange (val) {
+      console.log(`每页 ${val} 条`)
+      this.pagenum = 1
+      this.pagesize = val
+      this.getUserList()
+    },
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
+      this.pagenum = val
+      this.getUserList()
     }
   }
 }
 </script>
 
 <style>
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
 .box-card {
   height: 100%;
 }
@@ -106,5 +148,8 @@ export default {
   border: black 2px;
   width: 30%;
   padding-top: 20px;
+}
+.usertable {
+  padding: 20px;
 }
 </style>
