@@ -11,11 +11,16 @@
       <el-col>
         <el-input placeholder="请输入内容"
                   class="seekinput"
-                  v-model="query">
+                  v-model="query"
+                  clearable
+                  @clear="loadUserList()">
           <el-button slot="append"
-                     icon="el-icon-search"></el-button>
+                     icon="el-icon-search"
+                     @click="seekuser()"></el-button>
         </el-input>
-        <el-button type="success">添加用户</el-button>
+        <el-button type="success"
+                   @click="dialogFormVisibleAdd = true">添加用户</el-button>
+
       </el-col>
     </el-row>
     <!-- 3.表格 -->
@@ -28,7 +33,7 @@
       </el-table-column>
       <el-table-column prop="username"
                        label="姓名"
-                       width="70">
+                       width="140">
       </el-table-column>
       <el-table-column prop="email"
                        label="邮箱">
@@ -56,19 +61,22 @@
       </el-table-column>
       <el-table-column prop="address"
                        label="操作">
-        <template>
+        <template slot-scope="scope">
           <el-button type="success"
                      icon="el-icon-check"
                      circle></el-button>
           <el-button type="primary"
                      icon="el-icon-edit"
-                     circle></el-button>
+                     circle
+                     @click="handleEditUser(scope.row)"></el-button>
           <el-button type="danger"
                      icon="el-icon-delete"
-                     circle></el-button>
+                     circle
+                     @click="handleDelUser(scope.row.id)"></el-button>
         </template>
       </el-table-column>
     </el-table>
+
     <!-- 4.分页 -->
     <div class="block">
       <el-pagination @size-change="handleSizeChange"
@@ -80,6 +88,60 @@
                      :total="total">
       </el-pagination>
     </div>
+    <el-dialog title="用户基本信息"
+               :visible.sync="dialogFormVisibleAdd">
+      <el-form :model="form">
+        <el-form-item label="名称"
+                      :label-width="formLabelWidth">
+          <el-input v-model="form.username"
+                    autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密码"
+                      :label-width="formLabelWidth">
+          <el-input v-model="form.password"
+                    autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱"
+                      :label-width="formLabelWidth">
+          <el-input v-model="form.email"
+                    autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话"
+                      :label-width="formLabelWidth">
+          <el-input v-model="form.mobile"
+                    autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button type="primary"
+                   @click="addUser()">确 定</el-button>
+        <el-button @click="dialogFormVisibleAdd = false">取 消</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="编辑信息"
+               :visible.sync="dialogFormVisibleEdit">
+      <el-form :model="form">
+        <el-form-item label="名称">
+          <el-input v-model="form.username"
+                    autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话">
+          <el-input v-model="form.mobile"
+                    autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="form.email"
+                    autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button @click="dialogFormVisibleEdit = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="dialogFormVisibleEdit = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -91,7 +153,16 @@ export default {
       pagenum: 1,
       pagesize: 2,
       total: -1,
-      userlist: []
+      userlist: [],
+      dialogFormVisibleAdd: false,
+      dialogFormVisibleEdit: false,
+      formLabelWidth: '80px',
+      form: {
+        username: '',
+        password: '',
+        email: '',
+        mobile: ''
+      }
     }
   },
   created () {
@@ -130,6 +201,60 @@ export default {
       console.log(`当前页: ${val}`)
       this.pagenum = val
       this.getUserList()
+    },
+    seekuser () {
+      this.getUserList()
+    },
+    loadUserList () {
+      this.getUserList()
+    },
+    async addUser () {
+      const res = await this.$http.post('users', this.form)
+      console.log(res)
+      const {
+        meta: { msg, status }
+      } = res.data
+      if (status === 201) {
+        this.$message.success(msg)
+        this.dialogFormVisibleAdd = false
+        this.form = {}
+        this.getUserList()
+      } else {
+        this.$message.error(msg)
+      }
+    },
+    handleEditUser (user) {
+      this.dialogFormVisibleEdit = true
+      this.form.username = user.username
+      this.form.email = user.email
+      this.form.mobile = user.mobile
+    },
+    handleDelUser (id) {
+      this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async () => {
+          const res = await this.$http.delete(`users/${id}`)
+          console.log(res)
+          const {
+            meta: { status, msg }
+          } = res.data
+          // 僕らの手には何もないけど
+          if (status === 200) {
+            this.getUserList()
+            this.$message.success(msg)
+          } else {
+            this.$message.error(msg)
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     }
   }
 }

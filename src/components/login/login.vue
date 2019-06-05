@@ -53,6 +53,7 @@ export default {
       // })
       // 让异步代码看起来像同步代码 ES7 - async+await
       const res = await this.$http.post('login', this.formLabelAlign)
+      console.log(res)
       const {
         data,
         meta: { msg, status }
@@ -60,6 +61,7 @@ export default {
       if (status === 200) {
         // 保存 token
         localStorage.setItem('token', data.token)
+        localStorage.setItem('uname', data.username)
         this.$router.push({ name: 'home' })
         this.$message.success(msg)
       } else {

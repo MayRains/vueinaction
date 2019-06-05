@@ -16,7 +16,7 @@
           <div class="grid-content bg-purple">
             <a href="#"
                class="logout"
-               @click.prevent="handleLogOut">注销</a>
+               @click.prevent="handleLogOut"><strong>{{username}}</strong></a>
           </div>
         </el-col>
       </el-row>
@@ -81,6 +81,11 @@
 
 <script>
 export default {
+  data () {
+    return {
+      username: ''
+    }
+  },
   // 获取 token | if token ->继续渲染组件 | 没有token -> 登录
   beforeCreate () {
     const token = localStorage.getItem('token')
@@ -88,7 +93,13 @@ export default {
       this.$router.push({ name: 'login' })
     }
   },
+  created () {
+    this.getUsername()
+  },
   methods: {
+    getUsername () {
+      this.username = localStorage.getItem('uname')
+    },
     handleLogOut () {
       // 清除token 提示 回到 login
       localStorage.clear()
@@ -125,6 +136,7 @@ export default {
   border-radius: 3px;
 }
 h3 {
+  color: green;
   text-align: center;
   line-height: 15px;
 }
