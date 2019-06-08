@@ -25,16 +25,16 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       formLabelAlign: {
-        username: '',
-        password: ''
+        username: "",
+        password: ""
       }
-    }
+    };
   },
   methods: {
-    async handleLogin () {
+    async handleLogin() {
       // this.$http.post('login', this.formLabelAlign).then(res => {
       //   // console.log(res)
       //   // 登陆成功-- 跳转界面 提示登陆成功 || 不成功 --提示原因 msg
@@ -52,24 +52,24 @@ export default {
       //   }
       // })
       // 让异步代码看起来像同步代码 ES7 - async+await
-      const res = await this.$http.post('login', this.formLabelAlign)
-      console.log(res)
+      const res = await this.$http.post("login", this.formLabelAlign);
+      console.log(res);
       const {
         data,
         meta: { msg, status }
-      } = res.data
+      } = res.data;
       if (status === 200) {
         // 保存 token
-        localStorage.setItem('token', data.token)
-        localStorage.setItem('uname', data.username)
-        this.$router.push({ name: 'home' })
-        this.$message.success(msg)
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("uname", data.username);
+        this.$router.push({ name: "home" });
+        this.$message.success(msg);
       } else {
-        this.$message.error(msg)
+        this.$message.error(msg);
       }
     }
   }
-}
+};
 </script>
 
 <style>
