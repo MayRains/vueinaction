@@ -225,6 +225,7 @@ export default {
   },
   created() {
     this.getUserList();
+    this.getRoleList();
   },
   methods: {
     async getUserList() {
@@ -367,7 +368,7 @@ export default {
       if (res.meta.status != 200) return this.$message.error(msg);
       // console.log(res);
       this.rolesList = res.data;
-      // console.log(res.data);
+      console.log(res.data);
     },
     async setUserRole() {
       const res = await this.$http.put(`users/${this.setRoleForm.curId}/role`, {

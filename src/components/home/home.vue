@@ -44,8 +44,8 @@
               <i class="el-icon-star-on"></i>
               <span slot="title">权限管理</span>
             </template>
-            <el-menu-item index="2-1"><i class="el-icon-s-custom"></i>角色列表</el-menu-item>
-            <el-menu-item index="2-2"><i class="el-icon-s-check"></i>权限列表</el-menu-item>
+            <el-menu-item index="roles"><i class="el-icon-s-custom"></i>角色列表</el-menu-item>
+            <el-menu-item index="right"><i class="el-icon-s-check"></i>权限列表</el-menu-item>
           </el-submenu>
           <el-submenu index="3">
             <template slot="title">
@@ -81,33 +81,33 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
-      username: ''
-    }
+      username: ""
+    };
   },
   // 获取 token | if token ->继续渲染组件 | 没有token -> 登录
-  beforeCreate () {
-    const token = localStorage.getItem('token')
+  beforeCreate() {
+    const token = localStorage.getItem("token");
     if (!token) {
-      this.$router.push({ name: 'login' })
+      this.$router.push({ name: "login" });
     }
   },
-  created () {
-    this.getUsername()
+  created() {
+    this.getUsername();
   },
   methods: {
-    getUsername () {
-      this.username = localStorage.getItem('uname')
+    getUsername() {
+      this.username = localStorage.getItem("uname");
     },
-    handleLogOut () {
+    handleLogOut() {
       // 清除token 提示 回到 login
-      localStorage.clear()
-      this.$message.success('注销成功')
-      this.$router.push({ name: 'login' })
+      localStorage.clear();
+      this.$message.success("注销成功");
+      this.$router.push({ name: "login" });
     }
   }
-}
+};
 </script>
 
 <style>
