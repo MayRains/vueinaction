@@ -63,18 +63,19 @@
                        label="描述">
       </el-table-column>
       <el-table-column label="操作">
-        <template>
+        <template slot-scope="scope">
           <el-row>
             <el-button type="primary"
                        icon="el-icon-edit"
                        circle
-                       @click="handleSetRight()"></el-button>
+                       @click="handleSetRight(scope.row)"></el-button>
             <el-button type="success"
                        icon="el-icon-check"
                        circle></el-button>
             <el-button type="danger"
                        icon="el-icon-delete"
-                       circle></el-button>
+                       circle
+                       @click="deleteRole(scope.row.id)"></el-button>
           </el-row>
         </template>
       </el-table-column>
@@ -97,7 +98,6 @@
         <el-button type="primary"
                    @click="addRole()">确 定</el-button>
         <el-button @click="dialogFormVisibleRole = false">取 消</el-button>
-
       </div>
     </el-dialog>
     <el-dialog title="分配权限"
@@ -106,22 +106,20 @@
         <el-tree :data="treeDataForm"
                  show-checkbox
                  node-key="id"
-                 :default-expanded-keys="[2, 3]"
-                 :default-checked-keys="[5]"
-                 :props="treeProps">
+                 :default-expand-all="true"
+                 :props="treeProps"
+                 :default-checked-keys="treeCheckedkeys"
+                 ref="tree">
         </el-tree>
       </template>
       <div slot="footer"
            class="dialog-footer">
         <el-button type="primary"
-                   @click="addRight()">确 定</el-button>
-        <el-button @click="dialogFormVisibleRole = false">取 消</el-button>
-
+                   @click="addRight()">分配权限</el-button>
+        <el-button @click="dialogFormVisibleRight = false">取 消</el-button>
       </div>
     </el-dialog>
-
   </el-card>
-
 </template>
 
 <script>
@@ -133,6 +131,8 @@ export default {
         label: "authName",
         children: "children"
       },
+      treeCheckedkeys: [],
+      selectedRoleId: "", // 即将要分配权限的 id
       rolesList: [],
       dialogFormVisibleRole: false,
       dialogFormVisibleRight: false,
@@ -144,7 +144,7 @@ export default {
   },
   created() {
     this.getRoleList();
-    this.getRightList();
+    // this.getRightList();
   },
   methods: {
     async getRoleList() {
@@ -189,19 +189,78 @@ export default {
         this.$message.error(msg);
       }
     },
-    handleSetRight() {
+    async handleSetRight(row) {
+      // 界面里调用的 scope.row 是当前传的值 获取数据需要写在当前的方法中 否则获取不到
+      this.selectedRoleId = row.id;
+      const { data: res } = await this.$http.get(`rights/tree`);
+      if (res.meta.status !== 200) return this.$message.error("获取列表失败");
+      console.log(res.data);
+      this.treeDataForm = res.data;
+      const keys = []; //用来存放三级权限的ID
+      this.getLeafIds(row, keys);
+      console.log(keys);
+      this.treeCheckedkeys = keys;
       this.dialogFormVisibleRight = true;
     },
-    addRight() {},
-    async getRightList() {
-      const { data: res } = await this.$http.get(`rights/tree`);
-      if (res.meta.status === 200) {
-        console.log(res.data);
-        this.treeDataForm = res.data;
+    getLeafIds(node, keyArray) {
+      if (!node.children) {
+        keyArray.push(node.id);
       } else {
-        this.$message.error("获取权限失败");
+        node.children.forEach(item => {
+          this.getLeafIds(item, keyArray); // 方法内调用方法一定要加 this
+        });
+      }
+    },
+    async addRight() {
+      const halfselectStr = this.$refs.tree.getHalfCheckedKeys();
+      const selectedStr = this.$refs.tree.getCheckedKeys();
+      const keys = [...halfselectStr, ...selectedStr];
+      const idStr = keys.join(",");
+      const { data: res } = await this.$http.post(
+        `roles/${this.selectedRoleId}/rights`,
+        {
+          rids: idStr
+        }
+      );
+      if (res.meta.status === 200) {
+        this.$message.success(res.meta.msg);
+        this.dialogFormVisibleRight = false;
+      } else {
+        this.$message.error(res.meta.msg);
+        this.dialogFormVisibleRight = false;
+      }
+    },
+    async deleteRole(id) {
+      const confirmRes = await this.$confirm("确定要删除该角色", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).catch(err => err);
+
+      if (confirmRes !== "confirm") {
+        this.$message({
+          type: "info",
+          message: "已取消删除"
+        });
+      } else {
+        const { data: res } = await this.$http.delete(`roles/${id}`);
+        if (res.meta.status === 200) {
+          this.$message.success(res.meta.msg);
+          this.getRoleList();
+        } else {
+          this.$message.error(res.meta.msg);
+        }
       }
     }
+    // async getRightList() {
+    //   const { data: res } = await this.$http.get(`rights/tree`);
+    //   if (res.meta.status === 200) {
+    //     console.log(res.data);
+    //     this.treeDataForm = res.data;
+    //   } else {
+    //     this.$message.error("获取权限失败");
+    //   }
+    // }
   }
 };
 </script>
