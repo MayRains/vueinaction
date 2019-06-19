@@ -52,9 +52,9 @@
               <i class="el-icon-s-goods"></i>
               <span slot="title">商品管理</span>
             </template>
-            <el-menu-item index="3-1"><i class="el-icon-s-shop"></i>商品列表</el-menu-item>
-            <el-menu-item index="3-2"><i class="el-icon-question"></i>分类参数</el-menu-item>
-            <el-menu-item index="3-3"><i class="el-icon-goods"></i>商品分类</el-menu-item>
+            <el-menu-item index="goodlist"><i class="el-icon-s-shop"></i>商品列表</el-menu-item>
+            <el-menu-item index="classifyparam"><i class="el-icon-question"></i>分类参数</el-menu-item>
+            <el-menu-item index="goodclassify"><i class="el-icon-goods"></i>商品分类</el-menu-item>
           </el-submenu>
           <el-submenu index="4">
             <template slot="title">
